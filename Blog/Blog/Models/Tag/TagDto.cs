@@ -1,16 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Blog.Models.Post;
 
-namespace Blog.Entities
+namespace Blog.Models.Tag
 {
     /// <summary>
-    /// Тег
+    /// Тег DTO
     /// </summary>
-    public class Tag
+    public class TagDto
     {
         /// <summary>
         /// Идентификатор тега
         /// </summary>
-        [Key]
         public int Id { get; set; }
 
         /// <summary>
@@ -21,6 +20,6 @@ namespace Blog.Entities
         /// <summary>
         /// Посты
         /// </summary>
-        public List<Post> Posts { get; set; }
+        public List<PostDto> Posts { get; set; }
     }
 }

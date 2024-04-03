@@ -1,16 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Blog.Entities
+﻿namespace Blog.Models.User
 {
     /// <summary>
-    /// Пользователь
+    /// Пользователь DTO
     /// </summary>
-    public class User
+    public class UserDto
     {
         /// <summary>
-        /// Идентификатор
+        /// Идентификатор пользователя
         /// </summary>
-        [Key]
         public int Id { get; set; }
 
         /// <summary>
@@ -19,7 +16,7 @@ namespace Blog.Entities
         public string FullName { get; set; }
 
         /// <summary>
-        /// Почта
+        /// Почта пользователя
         /// </summary>
         public string Email { get; set; }
     }

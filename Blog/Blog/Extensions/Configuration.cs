@@ -7,6 +7,7 @@ namespace Blog.Extensions
         public static void RegisterServices(this WebApplicationBuilder builder)
         {
             builder.Services
+                .AddCors()
                 .AddEndpointsApiExplorer()
                 .AddCarter()
                 .AddSwaggerGen();
@@ -14,14 +15,11 @@ namespace Blog.Extensions
 
         public static void RegisterMiddlewares(this WebApplication app)
         {
-            app.UseAntiforgery();
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger()
                     .UseSwaggerUI();
             }
-
-            app.MapCarter();
         }
     }
 }

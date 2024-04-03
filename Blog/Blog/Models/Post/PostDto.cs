@@ -1,16 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Blog.Models.Tag;
+using Blog.Models.User;
 
-namespace Blog.Entities
+namespace Blog.Models.Post
 {
     /// <summary>
-    /// Пост
+    /// Пост DTO
     /// </summary>
-    public class Post
+    public class PostDto
     {
         /// <summary>
         /// Идентификатор поста
         /// </summary>
-        [Key]
         public int Id { get; set; }
 
         /// <summary>
@@ -46,12 +46,12 @@ namespace Blog.Entities
         /// <summary>
         /// Автор поста
         /// </summary>
-        public int UserId { get; set; }
-        public User User { get; set; }
-        
+        public UserDto User { get; set; }
+        public string UserFullName { get; set; }
+
         /// <summary>
         /// Теги
         /// </summary>
-        public List<Tag> Tags { get; set; }
+        public List<TagDto> Tags { get; set; }
     }
 }

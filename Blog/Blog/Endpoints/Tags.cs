@@ -1,7 +1,6 @@
-﻿using Blog.Data;
-using Blog.Entities;
+﻿using Blog.Entities;
+using Blog.Models.Tag;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Endpoints
 {
@@ -10,29 +9,56 @@ namespace Blog.Endpoints
         public static void RegisterTagEndpoints(this IEndpointRouteBuilder routes)
         {
             // CRUD Tag
-            var tags = routes.MapGroup("/api/v1/tags");
+            var tags = routes.MapGroup("/api/tags").WithTags("Tags");
 
-            tags.MapGet("/", (AppDbContext dbContext) => dbContext.Tags);
+            // GET
+            tags.MapGet("/", (AppDbContext dbContext) => dbContext.Tags.Select( p => new TagDto()
+            {
+                Id = p.Id,
+                Name = p.Name,
+
+            }));
 
             tags.MapGet("/{id}", ([FromRoute] int id, AppDbContext dbContext) =>
             {
-                return dbContext.Tags.FirstOrDefault(t => t.Id == id);
+                return dbContext.Tags.Select(p => new TagDto()
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+            
+                }).SingleOrDefault(t => t.Id == id);
             });
-
-            tags.MapPost("/", (Tag tag, AppDbContext dbContext) => dbContext.Tags.Add(tag));
-
-            tags.MapPut("/{id}", ([FromRoute] int id, Tag tag, AppDbContext dbContext) =>
+            
+            // POST
+            tags.MapPost("/", async (TagCreateDto tag, AppDbContext dbContext) =>
             {
-                Tag currentTag = dbContext.Tags.FirstOrDefault(t => t.Id == id);
-
+                var newTag = new Tag()
+                {
+                    Name = tag.Name,
+                };
+            
+                dbContext.Tags.Add(newTag);
+                await dbContext.SaveChangesAsync();
+            });
+            
+            // PUT
+            tags.MapPut("/{id}", async ([FromRoute] int id, TagUpdateDto tag, AppDbContext dbContext) =>
+            {
+                var currentTag = dbContext.Tags.SingleOrDefault(t => t.Id == id) ?? throw new Exception("Tag с таким Id не найден");
+            
                 currentTag.Name = tag.Name;
+            
+                await dbContext.SaveChangesAsync();
             });
-
-            tags.MapDelete("/{id}", ([FromRoute] int id, AppDbContext dbContext) =>
+            
+            // DELETE
+            tags.MapDelete("/{id}", async ([FromRoute] int id, AppDbContext dbContext) =>
             {
-                var tagDelete = dbContext.Tags.FirstOrDefault(t => t.Id == id);
-
+                var tagDelete = dbContext.Tags.FirstOrDefault(t => t.Id == id) ?? throw new Exception("Tag с таким Id не найден");
+            
                 dbContext.Tags.Remove(tagDelete);
+            
+                await dbContext.SaveChangesAsync();
             });
         }
     }

@@ -1,5 +1,5 @@
-﻿using Blog.Data;
-using Blog.Entities;
+﻿using Blog.Entities;
+using Blog.Models.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Endpoints
@@ -9,30 +9,58 @@ namespace Blog.Endpoints
         public static void RegisterUserEndpoints(this IEndpointRouteBuilder routes)
         {
             // CRUD User
-            var users = routes.MapGroup("/api/v1/users");
+            var users = routes.MapGroup("/api/users").WithTags("Users");            
 
-            users.MapGet("/users", (AppDbContext dbContext) => dbContext.Users);
-
-            users.MapGet("/users/{id}", ([FromRoute] int id, AppDbContext dbContext) =>
+            // GET
+            users.MapGet("/", (AppDbContext dbContext) => dbContext.Users.Select(u => new UserDto()
             {
-                return dbContext.Users.FirstOrDefault(user => user.Id == id);
+                Id = u.Id,
+                FullName = u.FullName,
+                Email = u.Email,
+            }));
+            
+            users.MapGet("/{id}", ([FromRoute] int id, AppDbContext dbContext) =>
+            {
+                return dbContext.Users.Select(u => new UserDto()
+                {
+                    Id = u.Id,
+                    FullName = u.FullName,
+                    Email = u.Email,
+                }).SingleOrDefault(user => user.Id == id);
             });
-
-            users.MapPost("/user", (User user, AppDbContext dbContext) => dbContext.Users.Add(user));
-
-            users.MapPut("/user/{id}", ([FromRoute] int id, User user, AppDbContext dbContext) =>
+            
+            // POST
+            users.MapPost("/", async (UserCreateDto user, AppDbContext dbContext) =>
             {
-                User currentUser = dbContext.Users.FirstOrDefault(user => user.Id == id);
+                var newUser = new User()
+                {
+                    FullName = user.FullName,
+                    Email = user.Email
+                };
 
+                dbContext.Users.Add(newUser);
+                await dbContext.SaveChangesAsync();
+            });
+            
+            // PUT
+            users.MapPut("/{id}", async ([FromRoute] int id, UserUpdateDto user, AppDbContext dbContext) =>
+            {
+                var currentUser = dbContext.Users.SingleOrDefault(user => user.Id == id);
+            
                 currentUser.FullName = user.FullName;
                 currentUser.Email = user.Email;
+
+                await dbContext.SaveChangesAsync();
             });
-
-            users.MapDelete("/user/{id}", ([FromRoute] int id, AppDbContext dbContext) =>
+            
+            // DELETE
+            users.MapDelete("/{id}", async ([FromRoute] int id, AppDbContext dbContext) =>
             {
-                var userDelete = dbContext.Users.FirstOrDefault(user => user.Id == id);
-
+                var userDelete = dbContext.Users.SingleOrDefault(user => user.Id == id);
+            
                 dbContext.Users.Remove(userDelete);
+
+                await dbContext.SaveChangesAsync();
             });
         }
     }

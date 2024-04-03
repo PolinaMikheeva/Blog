@@ -1,18 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Blog.Entities
+﻿namespace Blog.Models.Post
 {
     /// <summary>
-    /// Пост
+    /// Обновление поста DTO
     /// </summary>
-    public class Post
+    public class PostUpdateDto
     {
-        /// <summary>
-        /// Идентификатор поста
-        /// </summary>
-        [Key]
-        public int Id { get; set; }
-
         /// <summary>
         /// Название поста
         /// </summary>
@@ -44,14 +36,13 @@ namespace Blog.Entities
         public string Complexity { get; set; }
 
         /// <summary>
-        /// Автор поста
+        /// Идентификатор автора
         /// </summary>
         public int UserId { get; set; }
-        public User User { get; set; }
-        
+
         /// <summary>
-        /// Теги
+        /// Идентификаторы тегов
         /// </summary>
-        public List<Tag> Tags { get; set; }
+        public int[] Tags { get; set; }
     }
 }
